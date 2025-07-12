@@ -1,0 +1,174 @@
+refresh_led_registers:
+ldi r0, 0
+ldi r1, 0
+ldi r2, 0
+ldi r3, 0
+ldi r4, 0
+ldi r5, 0
+ldi r6, 0
+ldi r7, 0
+
+ld LENGTH, MEM_LENGTH
+st HEAD, 8
+st FRUIT, MEM_FRUIT
+st INPUT, MEM_OLDINP ; for this part of the code, use r9 to r13
+
+
+loop:
+ldi r10,0
+ldi r11,8
+f LENGTH, r10
+jne leds
+
+
+leds:
+ld r12, r11
+col r13, r12
+
+
+addi LENGTH, 255 ; subtract 1
+
+
+
+Pseudocode 1
+
+data:
+0-7 led lighting info
+8 snake head
+8-72 snake coords
+
+registers r0 to r15
+r0 to r7 hold snake leds when being calculated.
+r8  (LENGTH) holds length of the snake
+r9 (HEAD) holds snake head
+r10 (FRUIT) holds fruit position
+r11 (INPUT) holds input from the user
+r12 (OLD_INP) holds old input
+r15 holds return addr
+
+; Change DOWN, UP, LEFT RIGHT to their respective values
+;change MEM_INP parameter
+
+
+
+
+main:
+
+
+read_input:
+
+ld LENGTH, MEM_LENGTH
+ld OLD_INP, MEM_OLDINP
+ld INPUT, MEM_INP ; Change input parameter in the end
+
+
+ldi r13, DOWN
+f INPUT, r13
+je down
+ldi r13, LEFT
+f INPUT, r13
+je left
+ldi r13, UP
+f INPUT, r13
+je up
+ldi r13, RIGHT
+f INPUT, r13
+je right
+
+down:
+ldi r13, UP
+f OLD_INP, r13
+je check_head
+addi HEAD, 1
+j check_head
+
+// check for left, right and up, this is ai generated
+
+left:
+ldi r13, RIGHT
+f OLD_INP, r13
+je check_head
+addi HEAD, 240 ; subtracting 10000 from HEAD
+j check_head
+
+right:
+ldi r13, LEFT
+f OLD_INP, r13
+je check_head
+addi HEAD, 16
+j check_head
+
+up:
+ldi r13, DOWN
+f OLD_INP, r13
+je check_head
+addi HEAD, 255 ; Subtracting 1 from HEAD
+j check_head
+
+
+
+check_head:
+f HEAD, FRUIT
+je extend ; Verify this logic
+col r0, HEAD
+ldi r1, 8
+f r0, r1
+je game_over
+ldi r1, 15
+f r0, r1
+je game_over
+
+row r0, HEAD
+ldi r1, 8
+f r0, r1
+je game_over
+ldi r1, 15
+f r0, r1
+je game_over
+j leds
+
+game_over:
+
+
+
+extend:
+ldi r0, 7 ; head - 1 = 7 (if LENGTH=1 it will give head address)
+add r0, LENGTH ; Find the tail position
+ld r1, r0  ; Loads tail coord
+addi r0, 1
+st r1, r0 ; address is r0
+addi LENGTH, 1
+LFSR FRUIT
+j leds
+
+just_move:
+
+
+
+
+leds:
+st LENGTH, MEM_LENGTH
+ldi r0, 8 ; Starting from HEAD
+ldi r5, 0
+
+fruit:
+row r1, FRUIT
+col r2, FRUIT
+ld r3, r1
+incl r3, r2
+st r3, r1
+
+loop:
+ld HEAD, r0 ; HEAD holds all the coordinates in loop
+f HEAD, FRUIT
+
+row r1, HEAD ; memory location of the led byte
+col r2, HEAD
+ld r3, r1
+incl r3,r2
+st r3,r1 ; New LED (r3) back to memory (r1)
+addi r0, 1 ; Continuing with the body
+addi LENGTH, 255
+f r5, LENGTH
+jne loop
+

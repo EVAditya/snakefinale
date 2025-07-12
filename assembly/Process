@@ -1,0 +1,19 @@
+data:
+0-7 led lighting info
+8 snake head
+8-72 full snake info
+
+
+
+
+1. Start
+2. 
+
+wait for maybe 0.5 milliseconds using 2 bytes as software counter. (nop)
+depending on input
+a) if snake head touches walls (any coord >8 or <0) then game over
+b) if snake head=fruit, head tail is extended. And new fruit generated. 
+
+64 bytes must be converted to led - on -off
+a) 8 rows loaded.
+b) each byte loaded and converted to row, col info
