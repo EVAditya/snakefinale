@@ -6,12 +6,27 @@ module datamem(
 
     input c_memaddr,
     input c_dataread,
-    input c_datawrite
+    input c_datawrite,
+
+    input up,
+    input down,
+    input left,
+    input right
 
 );
 
     reg [7:0] datamem [0:255];
     reg [7:0] mar;
+
+    buttons input_buttons(
+        .clk(clk),
+        .reset(reset),
+        .up(up), 
+        .down(down),
+        .left(left),
+        .right(right),
+        .out(datamem[255])
+    );
 
     always @(posedge clk) begin
         if (reset) mar <=8'b0;

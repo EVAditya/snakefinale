@@ -4,7 +4,6 @@ data:
 8-72 snake coords
 
 registers r0 to r15
-r0 to r7 hold snake leds when being calculated.
 r8  (LENGTH) holds length of the snake
 r9 (HEAD) holds snake head
 r10 (FRUIT) holds fruit position
@@ -14,6 +13,11 @@ r12 (OLD_INP) holds old input
 ; Change DOWN, UP, LEFT RIGHT to their respective values
 ;change MEM_INP parameter
 
+UP - 1
+DOWN - 2
+LEFT - 3
+RIGHT - 0
+MEM_INP - 255
 
 main:
 

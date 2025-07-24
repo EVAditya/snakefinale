@@ -61,7 +61,7 @@ always @(*) begin
                 end
                 LDI: begin
                     c_ain = 0; c_bin = 0; c_alu = 0; c_aout = 0;
-                    c_a = 1; c_b = 0; c_imm = 1;
+                    c_a = 0; c_b = 0; c_imm = 1;
                     c_pc_inc = 0; c_pc_load = 0;
                     c_memaddr = 0; c_dataread = 0; c_datawrite = 0;
                     c_regwrite = 1; c_regread = 0;
@@ -94,7 +94,7 @@ always @(*) begin
                     c_a = 0; c_b = 1; c_imm = 0;
                     c_pc_inc = 0; c_pc_load = 0;
                     c_memaddr = 0; c_dataread = 0; c_datawrite = 0;
-                    c_regwrite = 1; c_regread = 0;
+                    c_regwrite = 0; c_regread = 1;
                     c_lfsr = 0;
                 end
                 
@@ -103,7 +103,7 @@ always @(*) begin
                     c_a = 0; c_b = 0; c_imm = 1;
                     c_pc_inc = 0; c_pc_load = 0;
                     c_memaddr = 0; c_dataread = 0; c_datawrite = 0;
-                    c_regwrite = 1; c_regread = 0;
+                    c_regwrite = 0; c_regread = 1;
                     c_lfsr = 0;
                 end
                 

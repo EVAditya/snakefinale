@@ -8,7 +8,7 @@ module instreg(
     input c_b,
     input c_imm,
     output [3:0] c_opcode,
-    output [3:0] regaddr  //goes to datamem
+    output [3:0] regaddr  //goes to gpr
 );
 
 reg [15:0] instreg;
@@ -21,7 +21,8 @@ always @(posedge clk) begin
 end
 
 assign bus = (c_imm) ? instreg[8:0] : 8'bz;
-
+assign regaddr = (c_a) ? instreg[11:8] :
+                 (c_b) ? instreg[7:4] : 4'bz;
 assign c_opcode = instreg[15:12];
 
 endmodule
