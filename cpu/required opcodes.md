@@ -22,8 +22,6 @@ je addr
 jne addr
 j addr
 
-# NOP
-nop
 
 
 
