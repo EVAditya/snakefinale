@@ -1,6 +1,6 @@
 module machine(
 
-    input clk,
+    input sclk,
     input reset,
     input up,
     input down,
@@ -10,6 +10,14 @@ module machine(
     output [7:0] led_row,
     output [7:0] led_col
 );
+    reg clk;
+    reg [2:0] clk_div;
+
+    always @(posedge sclk) begin //This is to delay the clock by 8 times.
+        clk_div <= clk_div + 1;
+        if(clk_div < 4) clk <= 0;
+        else clk <= 1;
+    end
 
     wire [7:0] bus;
     reg [7:0] npc;
@@ -94,4 +102,50 @@ module machine(
         .pc(npc),
         .inst(inst)
     );
+
+    buttons m_buttons(
+        .clk(clk),
+        .reset(reset),
+        .up(up),
+        .down(down),
+        .left(left),
+        .right(right),
+        .bus(bus)
+    );
+
+    datamem m_datamem(
+        .clk(clk),
+        .reset(reset),
+        .bus_in(bus),
+        .bus_out(bus),
+        .c_memaddr(c_memaddr),
+        .c_dataread(c_dataread),
+        .c_datawrite(c_datawrite),
+        .up(up),
+        .down(down),
+        .left(left),
+        .right(right),
+        .led_col(led_col),
+        .led_row(led_row)
+    );
+
+    gpr m_gpr(
+        .clk(clk),
+        .reset(reset),
+        .bus_in(bus),
+        .bus_out(bus),
+        .regaddr(inst[11:8]),
+        .c_regwrite(c_regwrite),
+        .c_regread(c_regread)
+    );
+
+    lfsr m_lfsr(
+        .clk(clk),
+        .reset(reset),
+        .bus_out(bus),
+        .c_lfsr(c_lfsr)
+    );
+
+
+
 endmodule

@@ -11,7 +11,10 @@ module datamem(
     input up,
     input down,
     input left,
-    input right
+    input right,
+
+    input [7:0] led_col,
+    input [7:0] led_row
 
 );
 
@@ -37,5 +40,17 @@ module datamem(
     end
             
     assign bus_out = (c_dataread) ? datamem[mar] : 8'bz; // Assuming bus_in is the address to read from
+
+    reg [2:0] counter;
+
+    always @(posedge clk) begin
+        if (reset) counter <= 3'b0;
+        else counter <= counter + 1;
+        end
+
+    assign led_col = 1<<(counter);
+    assign led_row = datamem[counter];
+
+    
 
     endmodule

@@ -10,20 +10,20 @@ r10 (FRUIT) holds fruit position
 r11 (INPUT) holds input from the user
 r12 (OLD_INP) holds old input
 
-; Change DOWN, UP, LEFT RIGHT to their respective values
-;change MEM_INP parameter
-
 UP - 1
 DOWN - 2
 LEFT - 3
 RIGHT - 0
 MEM_INP - 255
+MEM_LENGTH - 73
+MEM_OLDINP - 74
 
 main:
 
 init:
 ldi LENGTH, 1
 st LENGTH, MEM_LENGTH
+ldi HEAD, 68 ; Initial head position
 
 check_fruit_init:
 lfsr FRUIT 
@@ -106,6 +106,9 @@ j check_head
 
 
 check_head: 
+st INPUT, MEM_OLDINP ; Store the old input
+st HEAD, 8; Store head
+st LENGTH, MEM_LENGTH; length of snake
 col r0, HEAD ; Checks if wall is not hit
 ldi r1, 8 
 f r0, r1
