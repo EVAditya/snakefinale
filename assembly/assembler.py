@@ -28,8 +28,36 @@ CONSTANTS = {
 }
 
 REGISTERS = {f"R{i}": i for i in range(16)}
+REGISTERS.update({"LENGTH": 8, "HEAD": 9, "FRUIT": 10, "INPUT": 11, "OLD_INP": 12})
 
-def parse_operand(operand):
+
+def assemble_line(line, labels, current_addr, first_pass=False):
+    # Remove comments
+    line = line.split("//")[0].split(";")[0].strip()
+    if not line:
+        return None
+
+    # Check for label (supports `label:` or `label: instr ...`)
+    while ":" in line:
+        label, rest = line.split(":", 1)
+        label = label.strip()
+        if first_pass:
+            labels[label.upper()] = current_addr
+        line = rest.strip()
+        if not line:
+            return None  # Label only, no instruction on this line
+
+    # If after removing label, no instruction remains
+    if not line:
+        return None
+
+    tokens = re.split(r"[,\s]+", line.strip().upper())
+    instr = tokens[0]
+    args = tokens[1:]
+    return instr, args
+
+
+def parse_operand(operand, labels=None):
     operand = operand.strip().upper()
     if operand in REGISTERS:
         return REGISTERS[operand], "reg"
@@ -41,7 +69,7 @@ def parse_operand(operand):
         return int(operand), "imm"
     raise ValueError(f"Unknown operand: {operand}")
 
-def assemble_line(line, labels, current_addr):
+def assemble_line2(line, labels, current_addr):
     # Remove comments
     line = line.split("//")[0].split(";")[0].strip()
     if not line:
@@ -77,6 +105,9 @@ def encode_instruction(instr, args, labels):
         else:
             addr, _ = parse_operand(args[0])
         return (opcode << 12) | (0 << 8) | (addr & 0xFF)
+    elif instr in ("LFSR",):
+        ra, _ = parse_operand(args[0])
+        return (opcode << 12) | (ra << 8) | (0x00)
 
 def assemble(program):
     lines = program.strip().splitlines()
@@ -86,13 +117,13 @@ def assemble(program):
 
     # First pass: find labels
     for line in lines:
-        parsed = assemble_line(line, labels, addr)
+        parsed = assemble_line(line, labels, addr, first_pass=True)
         if parsed:
             addr += 1
 
     # Second pass: assemble
     for line in lines:
-        parsed = assemble_line(line, labels, None)
+        parsed = assemble_line(line, labels, None, first_pass=False)
         if parsed:
             instr, args = parsed
             code = encode_instruction(instr, args, labels)
@@ -116,11 +147,13 @@ def read_file_to_string(filename):
 
 
 assembly_code = """
+led :
+
 ldi r8, 1
 st r8, MEM_LENGTH
-lfsr r10
+lfsr fruit
 f r10, r9
-jne LEDS_INIT
+jne led
 """
 
 machine = assemble(assembly_code)

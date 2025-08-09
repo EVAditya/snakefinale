@@ -13,7 +13,7 @@ module machine(
     reg clk;
     reg [2:0] clk_div;
 
-    always @(posedge sclk) begin //This is to delay the clock by 8 times.
+    always @(posedge sclk) begin //This is to delay the clock by 8 times.   
         clk_div <= clk_div + 1;
         if(clk_div < 4) clk <= 0;
         else clk <= 1;
